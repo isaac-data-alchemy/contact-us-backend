@@ -42,7 +42,7 @@ def send_contact_email(name, email, phone_number, subject, message):
             subject = f"Contact us Form Submission: {subject}",
             message=f"Message from {name} ({email}), {phone_number}:\n{message}",
             from_email=email,
-            recipient_list=['contact_us@systemtech-ng.com'],
+            recipient_list=['ladi.suberu@systemtech-ng.com', 'contact_us@systemtech-ng.com'],
             fail_silently=False,
         )
         email_end_time = time.perf_counter()
