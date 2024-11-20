@@ -1,0 +1,247 @@
+openapi: 3.0.3
+info:
+  title: Contact-Us Page
+  version: 1.0.0
+  description: API for managing form submissions from https://systemtech.systemtech-ng.com/contact
+    . Collects and sends emails
+paths:
+  /api/schema/:
+    get:
+      operationId: api_schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/contact/:
+    post:
+      operationId: api_v1_contact_create
+      description: |-
+        Handles POST requests for processing contact form submissions.
+
+        This method validates the submitted form data, saves it to the database, and sends a confirmation
+        email. It handles errors gracefully and provides appropriate responses based on the outcome.
+
+        Args:
+            request: The HTTP request object containing the submitted form data.
+
+        Returns:
+            Response: A DRF Response object with:
+                - HTTP 200 OK status and success message if the submission is successful.
+                - HTTP 400 Bad Request status with validation errors if the data is invalid.
+                - HTTP 500 Internal Server Error status and error message if an exception occurs.
+
+        Workflow:
+            1. Logs the receipt of a contact form submission request.
+            2. Validates the submitted data using the `ContactSubmissionSerializer`.
+                - If valid:
+                    - Saves the submission to the database.
+                    - Sends a confirmation email using the extracted data.
+                - If invalid:
+                    - Returns a 400 response with validation errors.
+            3. Handles exceptions during data processing or email sending.
+                - Logs the error and returns a 500 response with a generic error message.
+
+        Raises:
+            Exception: Logs and handles any exceptions that occur during the process.
+
+        Logs:
+            - Info: Logs key events such as receipt of a request, successful save, or email sent.
+            - Debug: Logs detailed validation success.
+            - Warning: Logs validation errors.
+            - Error: Logs exceptions with traceback details.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactSubmission'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ContactSubmission'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ContactSubmission'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactSubmission'
+          description: ''
+components:
+  schemas:
+    ContactSubmission:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        phone_number:
+          type: string
+          pattern: ^\+?(?:[0-9][ -]?){6,14}[0-9]$
+          maxLength: 17
+        subject:
+          type: string
+          maxLength: 200
+        message:
+          type: string
+      required:
+      - email
+      - message
+      - name
+      - phone_number
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
