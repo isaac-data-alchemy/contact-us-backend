@@ -187,10 +187,12 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ORIGIN_WHITELIST = [
+CORS_ORIGIN_WHITELIST = (
     "http://localhost:3000",
     "http://localhost:8000",
-]
+)
+
+CSRF_TRUSTED_ORIGIN = ["http://localhost:3000"]
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
