@@ -81,6 +81,7 @@ class ContactFormView(GenericAPIView):
             message = serializer.validated_data['message']
 
             try:
+                # mask incoming email data for logs
                 masked_email = mask_sensitive_data(email)
                 # Time database operation
                 db_start = time.perf_counter()
