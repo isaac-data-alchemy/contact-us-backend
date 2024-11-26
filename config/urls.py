@@ -24,7 +24,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('systemtech/', admin.site.urls),
+    path('system-tech/', admin.site.urls),
     # Application API
     path('api/v1/', include('contacts.urls')),
     # API Documentation
