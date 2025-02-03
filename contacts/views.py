@@ -67,41 +67,41 @@ class ContactFormView(GenericAPIView):
         logger.info("Received contact form submission request")
 
         # Time serializer validation
-        serializer_start = time.perf_counter()
+        # serializer_start = time.perf_counter()
         serializer = ContactSubmissionSerializer(data=request.data)
-        is_valid = serializer.is_valid()
-        process_metrics['serializer_time'] = time.perf_counter() - serializer_start
+        # is_valid = serializer.is_valid()
+        # process_metrics['serializer_time'] = time.perf_counter() - serializer_start
 
-        if is_valid:
-            logger.debug(f"Form data validated")
-            name = serializer.validated_data['name']
-            email = serializer.validated_data['email']
-            phone_number = serializer.validated_data['phone_number']
-            subject = serializer.validated_data.get('subject', 'No subject')
-            message = serializer.validated_data['message']
+        # if is_valid:
+        logger.debug(f"Form data validated")
+        name = serializer.validated_data['name']
+        email = serializer.validated_data['email']
+        phone_number = serializer.validated_data['phone_number']
+        subject = serializer.validated_data.get('subject', 'No subject')
+        message = serializer.validated_data['message']
 
-            try:
-                # mask incoming email data for logs
-                masked_email = mask_sensitive_data(email)
+        try:
+            # mask incoming email data for logs
+            masked_email = mask_sensitive_data(email)
                 # Time database operation
                 # db_start = time.perf_counter()
-                submission = serializer.save()
+            submission = serializer.save()
                 # process_metrics['database_time'] = time.perf_counter() - db_start
 
-                logger.info(
-                    f"Contact submission saved to database. ID: {submission.id} "
-                    f"Email: {masked_email}"
-                    # f"(took {process_metrics['database_time']:.3f} seconds)"
-                )
+            logger.info(
+                f"Contact submission saved to database. ID: {submission.id} "
+                f"Email: {masked_email}"
+                # f"(took {process_metrics['database_time']:.3f} seconds)"
+            )
 
-                # Send email and get timing info
-                email_result = send_contact_email(
-                    name=name,
-                    email=email,
-                    phone_number=phone_number,
-                    subject=subject,
-                    message=message
-                )
+            # Send email and get timing info
+            email_result = send_contact_email(
+                name=name,
+                email=email,
+                phone_number=phone_number,
+                subject=subject,
+                message=message
+            )
 
                 # Extract email timing and result
                 # if isinstance(email_result, dict):
@@ -127,36 +127,36 @@ class ContactFormView(GenericAPIView):
                 #     f"  Total processing Time: {process_metrics['total_time']:.3f}s"
                 # )
 
-                return Response({
-                    'success': "Email sent successfully",
+            return Response({
+                'success': "Email sent successfully",
                     # 'processing_metrics': process_metrics
-                }, status=status.HTTP_200_OK)
+            }, status=status.HTTP_200_OK)
 
-            except IntegrityError as db_error:
-                logger.error(
-                    f"Database error: {str(db_error)}, Email:{masked_email}", exc_info=False)
-                return Response(
+        except IntegrityError as db_error:
+            logger.error(
+                f"Database error: {str(db_error)}, Email:{masked_email}", exc_info=False)
+            return Response(
                     {'error': "Something went wrong . Please try again later."},
                     status=status.HTTP_500_INTERNAL_SERVER_ERROR
                 )
-            except SMTPException as email_error:
-                logger.error(
-                    f"Email sending failed: {str(email_error)}, Email: {masked_email}",
-                    exc_info=False
-                )
-                return Response(
-                    {'error': "Email could not be sent. please try again later."},
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
-                )
-            except Exception as e:
-                logger.error(
-                    f"Unexpected error: {str(e)}",
-                    exc_info=True # Use stack trace for internal debugging
-                )
-                return Response(
-                    {'error': "An unexpected error occurred. Please try again later."},
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
-                )
+        except SMTPException as email_error:
+            logger.error(
+                f"Email sending failed: {str(email_error)}, Email: {masked_email}",
+                exc_info=False
+            )
+            return Response(
+                {'error': "Email could not be sent. please try again later."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        except Exception as e:
+            logger.error(
+                f"Unexpected error: {str(e)}",
+                exc_info=True # Use stack trace for internal debugging
+            )
+            return Response(
+                {'error': "An unexpected error occurred. Please try again later."},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
         logger.warning(
             f"Invalid form submission received: {serializer.errors} "
         )

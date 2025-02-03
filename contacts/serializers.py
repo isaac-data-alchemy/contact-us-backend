@@ -12,6 +12,7 @@ class ContactSubmissionSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if not all([data.get('name'), data.get('email'), data.get('phone_number'), data.get('message')]):
             raise serializers.ValidationError("name, email, phone number, and message are required fields.")
+            logger.warning("Validation error failed to complete required fields")
         existing = ContactSubmission.objects.filter(
             name=data['name'],
             email=data['email'],
