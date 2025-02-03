@@ -7,7 +7,7 @@ from smtplib import SMTPException
 from .models import ContactSubmission
 from .serializers import ContactSubmissionSerializer
 from .utils import send_contact_email
-from .utils import mask_sensitive_data
+from .utils import mask_sensitive_data as mask_email
 import logging
 import time
 from typing import Dict, Any
@@ -82,7 +82,7 @@ class ContactFormView(GenericAPIView):
 
         try:
             # mask incoming email data for logs
-            masked_email = mask_sensitive_data(email)
+            masked_email = mask_email(email)
                 # Time database operation
                 # db_start = time.perf_counter()
             submission = serializer.save()
