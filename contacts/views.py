@@ -6,7 +6,7 @@ from rest_framework import status
 from smtplib import SMTPException
 from .models import ContactSubmission
 from .serializers import ContactSubmissionSerializer
-from .utils import send_contact_email
+from .utils import send_contact_email as send_email
 from .utils import mask_sensitive_data as mask_email
 import logging
 import time
@@ -56,23 +56,9 @@ class ContactFormView(GenericAPIView):
         - Warning: Logs validation errors.
         - Error: Logs exceptions with traceback details.
     """
-        # start_time = time.perf_counter()
-        # process_metrics: Dict[str, Any] = {
-        #     'serializer_time': 0,
-        #     'database_time': 0,
-        #     'email_time': 0,
-        #     'total_time': 0
-        # }
-
-        logger.info("Received contact form submission request")
-
-        # Time serializer validation
-        # serializer_start = time.perf_counter()
+        # Log incoming requests 
+        logger.info("Received contact form submission request")    
         serializer = ContactSubmissionSerializer(data=request.data)
-        # is_valid = serializer.is_valid()
-        # process_metrics['serializer_time'] = time.perf_counter() - serializer_start
-
-        # if is_valid:
         logger.debug(f"Form data validated")
         name = serializer.validated_data['name']
         email = serializer.validated_data['email']
@@ -83,53 +69,22 @@ class ContactFormView(GenericAPIView):
         try:
             # mask incoming email data for logs
             masked_email = mask_email(email)
-                # Time database operation
-                # db_start = time.perf_counter()
             submission = serializer.save()
-                # process_metrics['database_time'] = time.perf_counter() - db_start
-
             logger.info(
                 f"Contact submission saved to database. ID: {submission.id} "
                 f"Email: {masked_email}"
-                # f"(took {process_metrics['database_time']:.3f} seconds)"
             )
 
-            # Send email and get timing info
-            email_result = send_contact_email(
+            # Send email
+            email_result = send_email(
                 name=name,
                 email=email,
                 phone_number=phone_number,
                 subject=subject,
                 message=message
             )
-
-                # Extract email timing and result
-                # if isinstance(email_result, dict):
-                #     process_metrics['email_time'] = email_result['execution_time']
-                #     email_response = email_result['result']
-
-                #     # If email_response is a Response object, an error occurred
-                #     if isinstance(email_response, Response):
-                #         return email_response
-                # else:
-                #     # Handle case where decorator wasn't applied (shouldn't happen)
-                #     email_response = email_result
-
-                # Calculate total processing time
-                # process_metrics['total_time'] = time.perf_counter() - start_time
-
-                # Log comprehensive timing information
-                # logger.info(
-                #     # "Request processing metrics:\n"
-                #     # f"  Serializer validation: {process_metrics['serializer_time']:.3f}s\n"
-                #     # f"  Database operation: {process_metrics['database_time']:.3f}s\n"
-                #     # f"  Email sending: {process_metrics['email_time']:.3f}s\n"
-                #     f"  Total processing Time: {process_metrics['total_time']:.3f}s"
-                # )
-
             return Response({
                 'success': "Email sent successfully",
-                    # 'processing_metrics': process_metrics
             }, status=status.HTTP_200_OK)
 
         except IntegrityError as db_error:
