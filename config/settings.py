@@ -79,7 +79,7 @@ REST_FRAMEWORK = {
 REST_AUTH_TOKEN_MODEL = None
 SPECTACULAR_SETTINGS = {
     "TITLE": "Contact-Us Page",
-    "DESCRIPTION": "API for managing form submissions from https://systemtech.systemtech-ng.com . Collects and sends emails",
+    "DESCRIPTION": "Development API for managing form submissions . Collects and sends emails",
     "VERSION": "1.0.0",
 }
 
