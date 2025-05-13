@@ -41,7 +41,7 @@ def send_contact_email(name, email, phone_number, subject, message):
             subject = f"Contact us Form Submission: {subject}",
             message=f"Message from {name} ({email}), {phone_number}:\n{message}",
             from_email=email,
-            recipient_list=['ejimoforisaac26@gmail.com'],
+            recipient_list=['jacksondoe26@gmail.com'],
             fail_silently=False,
         )
         logger.debug(f"Email sent successfully")
