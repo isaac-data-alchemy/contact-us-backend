@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Contact-Us Page
   version: 1.0.0
-  description: API for managing form submissions from https://systemtech.systemtech-ng.com/contact
+  description: API for managing form submissions 
     . Collects and sends emails
 paths:
   /api/schema/:
