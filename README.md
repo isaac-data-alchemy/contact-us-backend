@@ -30,8 +30,9 @@ Run the migrations to create the necessary database tables:
 
 bash
 Copy code
-python manage.py makemigrations
-python manage.py migrate
+`python manage.py makemigrations`
+`python manage.py migrate`
+
 2. API Usage Save a Submission
 Form submissions are sent as JSON payloads and saved using the ContactSubmission model. 
 ### Example payload:
@@ -58,14 +59,14 @@ Use Django's dumpdata command to export data using natural keys:
 
 bash
 Copy code
-python manage.py dumpdata app_name.ContactSubmission --natural-primary --indent 2 > submissions.json
+`python manage.py dumpdata app_name.ContactSubmission --natural-primary --indent 2 > submissions.json`
 
 ### Import Data
 #### Load data back into the Database
 
 bash
 Copy code
-python manage.py loaddata submissions.json
+`python manage.py loaddata submissions.json`
 
 # Author
 ### @isaac-data-alchemy
@@ -76,4 +77,4 @@ This project is licensed under the MIT License. See the LICENSE file for details
 
 ## Notes
 **Ensure the email backend is properly configured before going live.**
-**Secure your email credentials in the environment variables for production.**
+**Secure your email credentials in the environment variables for production. most likely this will depend on the way you are deploying your service because you could end up exporting these variables directly into the environment but do not take my word for it okay. Do your own research**
